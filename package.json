@@ -47,6 +47,7 @@
     ]
   },
   "devDependencies": {
+    "@types/bcrypt": "^5.0.0",
     "@types/validator": "^13.7.10",
     "validator": "^13.7.0"
   }
