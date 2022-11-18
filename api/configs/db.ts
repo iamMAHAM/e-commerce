@@ -1,6 +1,6 @@
 import { connect } from "mongoose"
 
-const connectDB = () =>{
+const connectDB = (): Promise<Boolean> =>{
     const MONGO = process.env.STRING_URI
     if (!MONGO) throw new Error('env STRING_URI is required.')
     return new Promise((resolve, reject) =>{
