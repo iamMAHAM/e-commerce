@@ -1,4 +1,6 @@
+import { config } from "dotenv"
 import { connect } from "mongoose"
+config()
 
 const connectDB = (): Promise<Boolean> =>{
     const MONGO = process.env.STRING_URI

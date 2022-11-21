@@ -1,5 +1,6 @@
 import { Schema, model } from "mongoose";
 import validator from "validator";
+import { comparePassword, hash } from "../functions/hash";
 
 const uSchema = new Schema({
     fullName: {
@@ -37,17 +38,28 @@ const uSchema = new Schema({
     carts: {
         type: Array,
         require: false,
-        default: []
     }
 }, {
     timestamps: true
 })
 
-uSchema.pre('save', function (next: Function){
-    const user = this
-    if (!user.isModified('password')) return next()
-
-
+uSchema.pre('save', async function (next: Function){
+    try{
+        const user = this
+        if (!user.isModified('password')) return next()
+        this.password = await hash(this.password!)
+        return next()
+    } catch(e: unknown){
+        return next(e)
+    }
 })
+
+uSchema.methods.validatePassword = async function (password: string): Promise<boolean>{
+    const isValid = await comparePassword(password, this.password)
+    console.log('isVALID', isValid)
+    return isValid
+        ? true
+        : false
+}
 
 export default model('User', uSchema)
