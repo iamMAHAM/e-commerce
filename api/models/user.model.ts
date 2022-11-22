@@ -2,19 +2,32 @@ import { Schema, model } from "mongoose";
 import validator from "validator";
 import { comparePassword, hash } from "../functions/hash";
 
-const uSchema = new Schema({
-    fullName: {
+export interface iUser {
+    fullname: string,
+    username: string,
+    email: string,
+    password: string,
+    birthday: Date,
+    carts?: object[]
+}
+
+interface iUserMethods {
+    validatePassword(password: string): Promise<Boolean>
+}
+
+const uSchema = new Schema<iUser, {}, iUserMethods>({
+    fullname: {
         type: String,
         required: true
     },
     username: {
         type: String,
-        unique: [true, 'username already taken !'],
-        minLength: [4, 'username : Minimum 4 caracteres.'],
-        maxLength: [16, 'username: Maximum 16 caracteres.'],
+        unique: true,
+        minLength: [4, 'Minimum 4 caracteres.'],
+        maxLength: [16, 'Maximum 16 caracteres.'],
         validate: {
             validator: (v: string) => validator.isAlpha(v, 'fr-FR'),
-            message: 'username: Only letter are allowed'
+            message: 'Only letter are allowed'
         }
     },
     email: {
@@ -35,8 +48,12 @@ const uSchema = new Schema({
             message: 'password is not strong'
         }
     },
+    birthday: {
+        type: Date,
+        // required: [true, 'missing birthday date']
+    },
     carts: {
-        type: Array,
+        type: [Object],
         require: false,
     }
 }, {
@@ -54,9 +71,8 @@ uSchema.pre('save', async function (next: Function){
     }
 })
 
-uSchema.methods.validatePassword = async function (password: string): Promise<boolean>{
+uSchema.methods.validatePassword = async function (password: string): Promise<Boolean>{
     const isValid = await comparePassword(password, this.password)
-    console.log('isVALID', isValid)
     return isValid
         ? true
         : false
