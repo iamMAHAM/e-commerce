@@ -38,6 +38,7 @@ const uSchema = new Schema<iUser, {}, iUserMethods>({
         required: [true, 'email is required'],
         unique: true,
         trim: true,
+        lowercase: true,
         validate: {
             validator: (v: string) => validator.isEmail(v),
             message: 'invalid email address'
