@@ -1,4 +1,4 @@
-import { Schema, model } from "mongoose";
+import { Schema, model, Date } from "mongoose";
 import validator from "validator";
 import { comparePassword, hash } from "../functions/hash";
 
@@ -8,6 +8,8 @@ export interface iUser {
     email: string,
     password: string,
     birthday: Date,
+    avatar: string,
+    emailVerified? : boolean,
     carts?: object[]
 }
 
@@ -23,6 +25,7 @@ const uSchema = new Schema<iUser, {}, iUserMethods>({
     username: {
         type: String,
         unique: true,
+        required: [true, 'missing username'],
         minLength: [4, 'Minimum 4 caracteres.'],
         maxLength: [16, 'Maximum 16 caracteres.'],
         validate: {
@@ -50,7 +53,19 @@ const uSchema = new Schema<iUser, {}, iUserMethods>({
     },
     birthday: {
         type: Date,
-        // required: [true, 'missing birthday date']
+        required: [true, 'missing birthday date'],
+        min: ['1900-01-01', 'invalid date'],
+        max: ['2005-12-31', '18 years minimum'],
+    },
+    emailVerified: {
+        type: Boolean,
+        required: false,
+        default: false,
+    },
+    avatar: {
+        type: String,
+        required: false,
+        default: 'https://img2.freepng.fr/20180331/eow/kisspng-computer-icons-user-clip-art-user-5abf13db298934.2968784715224718991702.jpg' 
     },
     carts: {
         type: [Object],
