@@ -13,7 +13,7 @@ export interface iUser {
     carts?: object[]
 }
 
-interface iUserMethods {
+export interface iUserMethods {
     validatePassword(password: string): Promise<Boolean>
 }
 
