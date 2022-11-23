@@ -45,7 +45,7 @@ const uSchema = new Schema<iUser, {}, iUserMethods>({
     },
     password: {
         type: String,
-        require: [true, 'password is required'],
+        required: [true, 'password is required'],
         validate: {
             validator: (v: string) => validator.isStrongPassword(v),
             message: 'password is not strong'
@@ -69,7 +69,7 @@ const uSchema = new Schema<iUser, {}, iUserMethods>({
     },
     carts: {
         type: [Object],
-        require: false,
+        required: false,
     }
 }, {
     timestamps: true
