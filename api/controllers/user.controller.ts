@@ -1,5 +1,5 @@
 import { Request, Response} from "express";
-import { UNAUTHORIZED, NOT_FOUND, INTERNAL, SUCCESS} from "../configs/defs";
+import { UNAUTHORIZED, NOT_FOUND, INTERNAL, SUCCESS, BAD_REQUEST} from "../configs/defs";
 import User, { iUser } from "../models/user.model";
 import {encode, decode, accessToken} from "../functions/sign"
 
@@ -12,6 +12,10 @@ class UserController {
         try{
             const user = new User(data)
             await user.save()
+            res.status(200).json({
+                ...SUCCESS,
+                message: 'confirm your email address'
+            })
         } catch (e: unknown){
             res.status(200).json({ 
                 status: false,
@@ -44,7 +48,7 @@ class UserController {
         const user = await User.findOne({ email : data.email})
         const isAuth = await user?.validatePassword(data.password)
 
-        if (!user || !isAuth){
+        if (!user || !isAuth || !user.emailVerified){
             res.status(401).json({
                 status: false,
                 message: 'Bad Credentials'
@@ -64,9 +68,9 @@ class UserController {
     static async updateUser(req: Request, res: Response){
         const data = req.body
         const id: string = req.params.id
-        const authorized = req.headers.authorization
-
-        if (!id || !data || !authorized || !decode(authorized)){
+        const payload = req.headers.authorization
+        
+        if (!id || !data || !payload || !decode(payload)){
             res.status(401).json(UNAUTHORIZED)
             return
         }
@@ -92,6 +96,21 @@ class UserController {
                 status: false,
                 message: e instanceof Error ? e.message : String(e)
             })
+        }
+    }
+
+    static async deleteUser(req: Request, res: Response){
+        const id = req.params.id
+        const authorization = req.headers.authorization
+        if (!id || !authorization || !decode(authorization)){
+            res.status(400).json(BAD_REQUEST)
+            return
+        }
+        try{
+            await User.findByIdAndDelete(id)
+            res.status(200).json(SUCCESS)
+        } catch (e){
+            res.status(500).json(INTERNAL)
         }
     }
 }
