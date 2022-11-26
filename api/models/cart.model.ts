@@ -1,28 +1,29 @@
-import { model, Schema } from "mongoose";
-
+import { model, Schema } from 'mongoose'
 
 const CartSchema = new Schema({
-    userId: {
+  userId: {
+    type: String,
+  },
+  items: [
+    {
+      productId: {
         type: String,
-    },
-    items: [{
-        productId: {
-            type: String,
-        },
-        name: String,
-        quantity: {
-            type: Number,
-            required: true,
-            min: [1, 'Quantity can not be less then 1.'],
-            default: 1
-        },
-        price: Number
-    }],
-    bill: {
+      },
+      name: String,
+      quantity: {
         type: Number,
         required: true,
-        default: 0
-    }
-});
+        min: [1, 'Quantity can not be less then 1.'],
+        default: 1,
+      },
+      price: Number,
+    },
+  ],
+  bill: {
+    type: Number,
+    required: true,
+    default: 0,
+  },
+})
 
 export default model('Cart', CartSchema)
