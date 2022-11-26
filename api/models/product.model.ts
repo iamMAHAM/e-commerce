@@ -6,7 +6,7 @@ interface IProduct {
   description: string
   price: number
 }
-
+ 
 const pSchema = new Schema<IProduct>({
   title: {
     type: String,
@@ -14,7 +14,7 @@ const pSchema = new Schema<IProduct>({
   },
   category: {
     type: Schema.Types.ObjectId,
-    ref: 'Category',
+    ref: 'Category', 
   },
   description: {
     type: String,
@@ -24,6 +24,8 @@ const pSchema = new Schema<IProduct>({
     type: Number,
     required: true,
   },
+}, {
+  timestamps: true
 })
 
 export default model('Product', pSchema)
